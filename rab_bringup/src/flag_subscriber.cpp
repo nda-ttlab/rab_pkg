@@ -16,6 +16,12 @@ void flagCallback(const std_msgs::Int8::ConstPtr& msg){
       ROS_WARN("[left] There is a obstacle between 1m of 1.5m");
    }else if(msg->data == 6){
       ROS_ERROR("[left] There is a obstacle within 1m");
+   }else if(msg->data == 7){
+      ROS_INFO("[front] There is a obstacle between 1.5m of 2m");
+   }else if(msg->data == 8){
+      ROS_WARN("[front] There is a obstacle between 1m of 1.5m");
+   }else if(msg->data == 9){
+      ROS_ERROR("[front] There is a obstacle within 1m");
    }
 }
 

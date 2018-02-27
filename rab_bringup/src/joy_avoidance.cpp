@@ -65,7 +65,7 @@ void JoyAvoidance::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
    this->left_front = scan->ranges.size() * 5 / 8; // 左45度前方
    this->left_back = scan->ranges.size() * 7 / 8; // 左45度後方
    double right_dist = minimumdist(scan, right_back, right_front, 0.0, 2.0);
-   double front_dist = minimumdist(scan, right_front, left_front, 0.0, 2.0);
+   double front_dist = minimumdist(scan, right_front, left_front, 0.0, 3.0);
    double left_dist = minimumdist(scan, left_front, left_back, 0.0 ,2.0);
    int flag_angle;
    if(right_dist < front_dist && right_dist < left_dist){
@@ -101,13 +101,13 @@ void JoyAvoidance::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
 	 break;
       }
     case 3:
-      if(front_dist < 1.0){
+      if(front_dist < 1.5){
 	 flag = 9;
 	 break;
-      }else if(front_dist < 1.5){
+      }else if(front_dist < 2.5){
 	 flag = 8;
 	 break;
-      }else if(front_dist < 2.0){
+      }else if(front_dist < 3.0){
 	 flag = 7;
 	 break;
       }      
@@ -122,21 +122,19 @@ void JoyAvoidance::cmdvelCallback(const geometry_msgs::Twist::ConstPtr& vel){
    // フラグに応じてcmd_velの値を調整しをpublish
    geometry_msgs::Twist cmd_vel;
    // 右舷前方
-   if(flag == 1 && (vel->linear.x > 0.0)){
+   if(flag == 1 && (vel->linear.z < 0.0)){
       cmd_vel.angular.z = vel->angular.z * 0.8;
-   }else if(flag == 2 && (vel->linear.x > 0.0)){
+   }else if(flag == 2 && (vel->linear.z < 0.0)){
       cmd_vel.angular.z = vel->angular.z * 0.5;
-   }else if(flag == 3 && (vel->linear.x > 0.0)){
+   }else if(flag == 3 && (vel->linear.z < 0.0)){
       cmd_vel.angular.z = 0.0;
-   }else{
-      cmd_vel.angular.z = vel->angular.z;
    }
    // 左舷前方
-   if(flag == 4 && (vel->linear.x > 0.0)){
+   if(flag == 4 && (vel->linear.z > 0.0)){
       cmd_vel.angular.z = vel->angular.z * 0.8;
-   }else if(flag == 5 && (vel->linear.x > 0.0)){
+   }else if(flag == 5 && (vel->linear.z > 0.0)){
       cmd_vel.angular.z = vel->angular.z * 0.5;
-   }else if(flag == 6 && (vel->linear.x > 0.0)){
+   }else if(flag == 6 && (vel->linear.z > 0.0)){
       cmd_vel.angular.z = 0.0;
    }
    // 正面
@@ -146,6 +144,9 @@ void JoyAvoidance::cmdvelCallback(const geometry_msgs::Twist::ConstPtr& vel){
       cmd_vel.linear.x = vel->linear.x * 0.5;
    }else if(flag == 9 && (vel->linear.x > 0.0)){
       cmd_vel.linear.x = 0.0;
+   }else{
+      cmd_vel.linear.x = vel->linear.x;
+      cmd_vel.angular.z = vel->angular.z;
    }
    cmd_vel.linear.y = 0.0;
    pub_vel.publish(cmd_vel);
