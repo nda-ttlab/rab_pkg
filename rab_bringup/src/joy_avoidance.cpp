@@ -59,11 +59,11 @@ double JoyAvoidance::minimumdist(const sensor_msgs::LaserScan::ConstPtr& scan,
 }
 
 void JoyAvoidance::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
-   // 位置に応じてフラグ変更
-   this->right_front = scan->ranges.size() * 3 / 8; // 右45度前方
-   this->right_back = scan->ranges.size() * 1 / 8; // 右45度後方
-   this->left_front = scan->ranges.size() * 5 / 8; // 左45度前方
-   this->left_back = scan->ranges.size() * 7 / 8; // 左45度後方
+   // 位置に応じてフラグ変更(真後ろを0度として)
+   this->right_front = scan->ranges.size() * 5 / 12; // 150度
+   this->right_back = scan->ranges.size() * 2 / 12; // 60度
+   this->left_front = scan->ranges.size() * 7 / 12; // 210度
+   this->left_back = scan->ranges.size() * 10 / 12; // 300度
    double right_dist = minimumdist(scan, right_back, right_front, 0.0, 2.0);
    double front_dist = minimumdist(scan, right_front, left_front, 0.0, 3.0);
    double left_dist = minimumdist(scan, left_front, left_back, 0.0 ,2.0);
@@ -101,13 +101,13 @@ void JoyAvoidance::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
 	 break;
       }
     case 3:
-      if(front_dist < 1.5){
+      if(front_dist < 1.0){
 	 flag = 9;
 	 break;
-      }else if(front_dist < 2.5){
+      }else if(front_dist < 1.5){
 	 flag = 8;
 	 break;
-      }else if(front_dist < 3.0){
+      }else if(front_dist < 2.0){
 	 flag = 7;
 	 break;
       }      
