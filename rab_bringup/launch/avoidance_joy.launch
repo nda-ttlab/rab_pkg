@@ -1,7 +1,7 @@
 <launch>
   <node name="joy_avoidance" pkg="rab_bringup" type="joy_avoidance" output="screen">
-    <param name="sub_cmdvel_tpoic" value="/cmd_vel_old" />
+    <param name="sub_cmdvel_topic" value="/cmd_vel_old" />
     <param name="scan_topic" value="/base_scan" />
-    <param name="pub_cmdvel_tpoic" value="/diff_drive_controller/cmd_vel" />
+    <param name="pub_cmdvel_topic" value="/diff_drive_controller/cmd_vel" />
   </node>
 </launch>
