@@ -23,7 +23,6 @@ class DigitalSignage{
    ros::Subscriber sub_odom;
 
    // param for topic
-   std::string odom_topic_;
    std::string first_path_;
    std::string second_path_;
    std::string default_path_;
@@ -64,9 +63,7 @@ DigitalSignage::DigitalSignage(ros::NodeHandle &nh){
    default_img = cv::imread(default_path_, 1);
    
    // subscribe topicの設定
-   n.param<std::string>("odom_topic", odom_topic_, "\"/diff_drive_controller/odom\"");
-   ROS_INFO("Subscribe topic : %s",odom_topic_.c_str());
-   sub_odom = nh.subscribe(odom_topic_, 100, &DigitalSignage::odomCallback, this);
+   sub_odom = nh.subscribe<nav_msgs::Odometry>(n.param<std::string>("odom_topic","odom"), 1, &DigitalSignage::odomCallback, this);
 }
 
 int DigitalSignage::isInSquare(const nav_msgs::Odometry::ConstPtr& msg, double x, double y, double meter){
