@@ -25,9 +25,9 @@ class JoyAvoidance{
    ros::Publisher pub_flag;
    
    // param for topic
-   std::string sub_cmdvel_topic_;
-   std::string scan_topic_;
-   std::string pub_cmdvel_topic_;
+   //std::string sub_cmdvel_topic_;
+   //std::string scan_topic_;
+   //std::string pub_cmdvel_topic_;
    
    // declaration of menber variable
    int front;
@@ -39,14 +39,14 @@ class JoyAvoidance{
 
 JoyAvoidance::JoyAvoidance(ros::NodeHandle &nh){
    ros::NodeHandle n("~");
-   n.param<std::string>("sub_cmdvel_topic", sub_cmdvel_topic_, "/cmd_vel_old");
-   n.param<std::string>("scan_topic", scan_topic_, "/base_scan");
-   n.param<std::string>("pub_cmdvel_topic", pub_cmdvel_topic_, "/cmd_vel");
+   //n.param<std::string>("sub_cmdvel_topic", sub_cmdvel_topic_, "/cmd_vel_old");
+   //n.param<std::string>("scan_topic", scan_topic_, "/base_scan");
+   //n.param<std::string>("pub_cmdvel_topic", pub_cmdvel_topic_, "/cmd_vel");
    // Subscriber
-   sub_scan = nh.subscribe(scan_topic_, 10, &JoyAvoidance::sensorCallback, this);
-   sub_vel = nh.subscribe(sub_cmdvel_topic_, 1, &JoyAvoidance::cmdvelCallback, this);
+   sub_scan = nh.subscribe<sensor_msgs::LaserScan>(n.param<std::string>("scan_topic","base_scan"), 1, &JoyAvoidance::sensorCallback, this);
+   sub_vel = nh.subscribe<geometry_msgs::Twist>(n.param<std::string>("sub_cmdvel_topic","cmd_vel_old"), 1, &JoyAvoidance::cmdvelCallback, this);
    // Publisher
-   pub_vel = nh.advertise<geometry_msgs::Twist>("/diff_drive_controller/cmd_vel"/*pub_cmdvel_topic_*/, 100);
+   pub_vel = nh.advertise<geometry_msgs::Twist>(n.param<std::string>("pub_cmdvel_topic","cmd_vel"), 1);
    pub_flag = nh.advertise<std_msgs::Int8>("/flag", 10);
 }
 
