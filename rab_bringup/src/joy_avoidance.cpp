@@ -29,6 +29,9 @@ class JoyAvoidance{
    int right_back;
    int left_front;
    int left_back;
+   int right_flag;
+   int left_flag;
+   int front_flag;
    int flag;
    std_msgs::Int8 flag_states;
 };
@@ -41,6 +44,10 @@ JoyAvoidance::JoyAvoidance(ros::NodeHandle &nh){
    // Publisher
    pub_vel = nh.advertise<geometry_msgs::Twist>(n.param<std::string>("pub_cmdvel_topic","cmd_vel"), 1);
    pub_flag = nh.advertise<std_msgs::Int8>("/flag", 10);
+   right_flag = 0;
+   left_flag = 0;
+   front_flag = 0;
+   flag = 0;
 }
 
 double JoyAvoidance::minimumdist(const sensor_msgs::LaserScan::ConstPtr& scan, 
@@ -67,53 +74,87 @@ void JoyAvoidance::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
    double right_dist = minimumdist(scan, right_back, right_front, 0.0, 2.0);
    double front_dist = minimumdist(scan, right_front, left_front, 0.0, 3.0);
    double left_dist = minimumdist(scan, left_front, left_back, 0.0 ,2.0);
-   int flag_angle;
-   if(right_dist < front_dist && right_dist < left_dist){
-      flag_angle = 1; // 右舷前方に障害物あり
-   }else if(left_dist < front_dist && left_dist < right_dist){
-      flag_angle = 2; // 左舷前方に障害物あり
-   }else if(front_dist < right_dist && front_dist < left_dist){
-      flag_angle = 3; // 正面に障害物あり
-   }else{
-      flag_angle = 0; // 障害物なし
-   }
-   switch(flag_angle){
-    case 1:
+   if(right_dist < 2.0){ // 右舷前方に障害物あり
       if(right_dist < 1.0){
-	 flag = 3;
-	 break;
+	 right_flag = 3;
       }else if(right_dist < 1.5){
-	 flag = 2;
-	 break;
+	 right_flag = 2;
       }else if(right_dist < 2.0){
-	 flag = 1;
-	 break;
+	 right_flag = 1;
       }
-    case 2:
+   }else{
+      right_flag = 0;
+   }
+   if(left_dist < 2.0){ // 左舷前方に障害物あり
       if(left_dist < 1.0){
-	 flag = 6;
-	 break;
+	 left_flag = 3;
       }else if(left_dist < 1.5){
-	 flag = 5;
-	 break;
+	 left_flag = 2;
       }else if(left_dist < 2.0){
-	 flag = 4;
-	 break;
+	 left_flag = 1;
       }
-    case 3:
-      if(front_dist < 1.0){
-	 flag = 9;
-	 break;
-      }else if(front_dist < 1.5){
-	 flag = 8;
-	 break;
+   }else{
+      left_flag = 0;
+   }
+   if(front_dist < 2.0){ // 正面に障害物あり
+      if(front_dist < 1.2){
+	 front_flag = 3;
+      }else if(front_dist < 1.7){
+	 front_flag = 2;
       }else if(front_dist < 2.0){
-	 flag = 7;
-	 break;
-      }      
-    case 0:
+	 front_flag = 1;
+      }
+   }else{
+      front_flag = 0;
+   }
+   if(right_flag == 0 && left_flag == 0 && front_flag == 0){
+      // 障害物なし
       flag = 0;
-      break;
+   }else if(left_flag == 3 && front_flag != 3 && right_flag != 3){
+      // 右1m以内に障害物
+      flag = 1;
+   }else if(left_flag != 3 && front_flag == 3 && right_flag != 3){
+      // 正面1.2m以内に障害物
+      flag = 2;
+   }else if(left_flag != 3 && front_flag != 3 && right_flag == 3){
+      // 左1m以内に障害物
+      flag = 3;
+   }else if(left_flag == 3 && front_flag == 3 && right_flag != 3){
+      // 右1m,正面1m以内に障害物
+      flag = 4;
+   }else if(left_flag != 3 && front_flag == 3 && right_flag == 3){
+      // 左1m,正面1.2以内に障害物
+      flag = 5;
+   }else if(left_flag == 2 && front_flag != 2 && right_flag != 2){
+      // 右1.5m以内に障害物
+      flag = 6;
+   }else if(left_flag != 2 && front_flag == 2 && right_flag != 2){
+      // 正面1.7m以内に障害物
+      flag = 7;
+   }else if(left_flag != 2 && front_flag != 2 && right_flag == 2){
+      // 左1.5m以内に障害物
+      flag = 8;
+   }else if(left_flag == 2 && front_flag == 2 && right_flag != 2){
+      // 右1.5m,正面1.7m以内に障害物
+      flag = 9;
+   }else if(left_flag != 2 && front_flag == 2 && right_flag == 2){
+      // 左1.5m,正面1.7以内に障害物
+      flag = 10;
+   }else if(left_flag == 1 && front_flag != 1 && right_flag != 1){
+      // 右2.0m以内に障害物
+      flag = 11;
+   }else if(left_flag != 1 && front_flag == 1 && right_flag != 1){
+      // 正面2.0m以内に障害物
+      flag = 12;
+   }else if(left_flag != 1 && front_flag != 1 && right_flag == 1){
+      // 左2.0m以内に障害物
+      flag = 13;
+   }else if(left_flag == 1 && front_flag == 1 && right_flag != 1){
+      // 右2.0m,正面2.0m以内に障害物
+      flag = 14;
+   }else if(left_flag != 1 && front_flag == 1 && right_flag == 1){
+      // 左2.0m,正面2.0以内に障害物
+      flag = 15;
    }
    flag_states.data = flag;
 }
@@ -121,32 +162,43 @@ void JoyAvoidance::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
 void JoyAvoidance::cmdvelCallback(const geometry_msgs::Twist::ConstPtr& vel){
    // フラグに応じてcmd_velの値を調整しをpublish
    geometry_msgs::Twist cmd_vel;
-   // 右舷前方
-   if(flag == 1 && (vel->linear.z < 0.0)){
-      cmd_vel.angular.z = vel->angular.z * 0.8;
-   }else if(flag == 2 && (vel->linear.z < 0.0)){
-      cmd_vel.angular.z = vel->angular.z * 0.5;
-   }else if(flag == 3 && (vel->linear.z < 0.0)){
-      cmd_vel.angular.z = 0.0;
-   }
-   // 左舷前方
-   if(flag == 4 && (vel->linear.z > 0.0)){
-      cmd_vel.angular.z = vel->angular.z * 0.8;
-   }else if(flag == 5 && (vel->linear.z > 0.0)){
-      cmd_vel.angular.z = vel->angular.z * 0.5;
-   }else if(flag == 6 && (vel->linear.z > 0.0)){
-      cmd_vel.angular.z = 0.0;
+   // 右舷
+   if(vel->angular.z < 0.0){
+      if(right_flag == 1){
+	 cmd_vel.angular.z = vel->angular.z * 0.8;
+      }else if(right_flag == 2){
+	 cmd_vel.angular.z = vel->angular.z * 0.5;
+      }else if(right_flag == 3){
+	 cmd_vel.angular.z = 0.0;
+      }else{
+	 cmd_vel.angular.z = vel->angular.z;
+      }  
+   }else if(vel->angular.z == 0.0){
+      cmd_vel.angular.z = vel->angular.z;
+   }else{ // 左舷
+      if(left_flag == 1){
+	 cmd_vel.angular.z = vel->angular.z * 0.8;
+      }else if(left_flag == 2){
+	 cmd_vel.angular.z = vel->angular.z * 0.5;
+      }else if(left_flag == 3){
+	 cmd_vel.angular.z = 0.0;
+      }else{
+	 cmd_vel.angular.z = vel->angular.z;
+      }
    }
    // 正面
-   if(flag == 7 && (vel->linear.x > 0.0)){
-      cmd_vel.linear.x = vel->linear.x * 0.8;
-   }else if(flag == 8 && (vel->linear.x > 0.0)){
-      cmd_vel.linear.x = vel->linear.x * 0.5;
-   }else if(flag == 9 && (vel->linear.x > 0.0)){
-      cmd_vel.linear.x = 0.0;
+   if(vel->linear.x > 0.0){
+      if(front_flag == 1){
+	 cmd_vel.linear.x = vel->linear.x * 0.8;
+      }else if(front_flag == 2){
+	 cmd_vel.linear.x = vel->linear.x * 0.5;
+      }else if(front_flag == 3){
+	 cmd_vel.linear.x = 0.0;
+      }else{
+	 cmd_vel.linear.x = vel->linear.x;
+      }
    }else{
       cmd_vel.linear.x = vel->linear.x;
-      cmd_vel.angular.z = vel->angular.z;
    }
    cmd_vel.linear.y = 0.0;
    pub_vel.publish(cmd_vel);

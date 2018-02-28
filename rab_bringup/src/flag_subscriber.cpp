@@ -5,23 +5,35 @@ void flagCallback(const std_msgs::Int8::ConstPtr& msg){
    if(msg->data == 0){
       ROS_INFO("There is no obstacle.");
    }else if(msg->data == 1){
-      ROS_INFO("[right] There is a obstacle between 1.5m of 2m");
+      ROS_ERROR("[left] within 1.0m");
    }else if(msg->data == 2){
-      ROS_WARN("[right] There is a obstacle between 1m of 1.5m");
+      ROS_ERROR("[front] within 1.2m");
    }else if(msg->data == 3){
-      ROS_ERROR("[right] There is a obstacle within 1m");
+      ROS_ERROR("[right] within 1.0m");
    }else if(msg->data == 4){
-      ROS_INFO("[left] There is a obstacle between 1.5m of 2m");
+      ROS_ERROR("[left][front] within 1.0m");
    }else if(msg->data == 5){
-      ROS_WARN("[left] There is a obstacle between 1m of 1.5m");
+      ROS_ERROR("[front][right] within 1.0m");
    }else if(msg->data == 6){
-      ROS_ERROR("[left] There is a obstacle within 1m");
+      ROS_WARN("[left] within 1.5m");
    }else if(msg->data == 7){
-      ROS_INFO("[front] There is a obstacle between 1.5m of 2m");
+      ROS_WARN("[front] within 1.7m");
    }else if(msg->data == 8){
-      ROS_WARN("[front] There is a obstacle between 1m of 1.5m");
+      ROS_WARN("[right] within 1.5m");
    }else if(msg->data == 9){
-      ROS_ERROR("[front] There is a obstacle within 1m");
+      ROS_WARN("[left][front] within 1.5m");
+   }else if(msg->data == 10){
+      ROS_WARN("[front][right] within 1.5m");
+   }else if(msg->data == 11){
+      ROS_INFO("[left] within 2.0m");
+   }else if(msg->data == 12){
+      ROS_INFO("[front] within 2.0m");
+   }else if(msg->data == 13){
+      ROS_INFO("[right] within 2.0m");
+   }else if(msg->data == 14){
+      ROS_INFO("[left][front] within 2.0m");
+   }else if(msg->data == 15){
+      ROS_INFO("[front][right] within 2.0m");
    }
 }
 
