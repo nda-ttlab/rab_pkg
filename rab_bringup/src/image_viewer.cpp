@@ -11,6 +11,7 @@ class DigitalSignage{
 
  private:
    int isInSquare(const nav_msgs::Odometry::ConstPtr& msg, double x, double y, double meter);
+   int isInCircle(const nav_msgs::Odometry::ConstPtr& msg, double x, double y, double radius);
    void odomCallback(const nav_msgs::Odometry::ConstPtr& msg);
    void publish_image(const nav_msgs::Odometry::ConstPtr& msg);
    int check_image();   
@@ -78,7 +79,18 @@ int DigitalSignage::isInSquare(const nav_msgs::Odometry::ConstPtr& msg, double x
    }else{
       return 1;
    }
-}      
+}
+
+int DigitalSignage::isInCircle(const nav_msgs::Odometry::ConstPtr& msg, double x, double y, double radius){
+   double dist;
+   dist = sqrt((fabs(msg->pose.pose.position.x)-fabs(x)) * (fabs(msg->pose.pose.position.x)-fabs(x))
+	       + (fabs(msg->pose.pose.position.y)-fabs(y)) * (fabs(msg->pose.pose.position.y)-fabs(y)));
+   if(dist < radius){
+      return 0;
+   }else{
+      return 1;
+   }
+}
 
 void DigitalSignage::publish_image(const nav_msgs::Odometry::ConstPtr& msg){
    // 画像表示

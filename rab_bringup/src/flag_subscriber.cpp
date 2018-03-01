@@ -34,6 +34,12 @@ void flagCallback(const std_msgs::Int8::ConstPtr& msg){
       ROS_INFO("[left][front] within 2.0m");
    }else if(msg->data == 15){
       ROS_INFO("[front][right] within 2.0m");
+   }else if(msg->data == 16){
+      ROS_ERROR("[back] within 0.6m");
+   }else if(msg->data == 17){
+      ROS_WARN("[back] within 1.2m");
+   }else if(msg->data == 18){
+      ROS_INFO("[back] within 2.0m");
    }
 }
 
