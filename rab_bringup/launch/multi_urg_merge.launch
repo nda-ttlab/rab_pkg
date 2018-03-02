@@ -12,6 +12,7 @@
 	<remap from="first" to="/left/first" />
 	<remap from="last" to="/left/last" />
 	<remap from="most_intense" to="/left/most_intense" />
+	<remap from="scan" to="/left/first" />
 	<param name="publish_intensity" type="bool" value="true"/>
 	<param name="publish_multiecho" type="bool" value="true"/>
 	<param name="angle_min" type="double" value="-1.69297" />
@@ -23,6 +24,7 @@
 	<param name="frame_id" type="string" value="right_lrf_link"/>
         <remap from="first" to="/right/first" />
 	<remap from="last" to="/right/last" />
+	<remap from="scan" to="/right/first" />
 	<remap from="most_intense" to="/right/most_intense" />
 	<param name="publish_intensity" type="bool" value="true"/>
 	<param name="publish_multiecho" type="bool" value="true"/>	
