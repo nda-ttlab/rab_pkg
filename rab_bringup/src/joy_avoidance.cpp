@@ -32,6 +32,7 @@ class JoyAvoidance{
    int right_flag;
    int left_flag;
    int front_flag;
+   int back_flag;
    int flag;
    std_msgs::Int8 flag_states;
 };
@@ -68,12 +69,22 @@ double JoyAvoidance::minimumdist(const sensor_msgs::LaserScan::ConstPtr& scan,
 void JoyAvoidance::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
    // 位置に応じてフラグ変更(真後ろを0度として)
    this->right_front = scan->ranges.size() * 5 / 12; // 150度
-   this->right_back = scan->ranges.size() * 2 / 12; // 60度
+   this->right_back = scan->ranges.size() * 1 / 12; // 30度
    this->left_front = scan->ranges.size() * 7 / 12; // 210度
-   this->left_back = scan->ranges.size() * 10 / 12; // 300度
+   this->left_back = scan->ranges.size() * 11 / 12; // 330度
    double right_dist = minimumdist(scan, right_back, right_front, 0.0, 2.0);
    double front_dist = minimumdist(scan, right_front, left_front, 0.0, 3.0);
    double left_dist = minimumdist(scan, left_front, left_back, 0.0 ,2.0);
+   double back_dist_1 = minimumdist(scan, left_back, 0, 0.0 ,2.0);
+   double back_dist_2 = minimumdist(scan, 0, right_back, 0.0, 2.0);
+   double back_dist;
+   if(back_dist_1 < back_dist_2){
+      back_dist = back_dist_1;
+   }else if(back_dist_1 == back_dist_2){
+      back_dist = 50.0;
+   }else{
+      back_dist = back_dist_2;
+   }
    if(right_dist < 2.0){ // 右舷前方に障害物あり
       if(right_dist < 1.0){
 	 right_flag = 3;
@@ -107,7 +118,19 @@ void JoyAvoidance::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
    }else{
       front_flag = 0;
    }
-   if(right_flag == 0 && left_flag == 0 && front_flag == 0){
+   if(back_dist < 2.0){  // 後方に障害物あり
+      if(back_dist < 0.6){
+	 back_flag = 3;
+      }else if(back_dist < 1.2){
+	 back_flag = 2;
+      }else if(back_dist < 1.0){
+	 back_flag = 1;
+      }
+   }else{
+      back_flag = 0;
+   }
+	
+   if(right_flag == 0 && left_flag == 0 && front_flag == 0 && back_flag == 0){
       // 障害物なし
       flag = 0;
    }else if(left_flag == 3 && front_flag != 3 && right_flag != 3){
@@ -155,6 +178,15 @@ void JoyAvoidance::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
    }else if(left_flag != 1 && front_flag == 1 && right_flag == 1){
       // 左2.0m,正面2.0以内に障害物
       flag = 15;
+   }else if(back_flag == 3){
+      // 後方1.2m以内に障害物
+      flag = 16;
+   }else if(back_flag == 2){
+      // 後方1.7m以内に障害物
+      flag = 17;
+   }else if(back_flag == 1){
+      // 後方2.0m以内に障害物
+      flag = 18;
    }
    flag_states.data = flag;
 }
@@ -197,8 +229,18 @@ void JoyAvoidance::cmdvelCallback(const geometry_msgs::Twist::ConstPtr& vel){
       }else{
 	 cmd_vel.linear.x = vel->linear.x;
       }
-   }else{
+   }else if(vel->linear.x == 0.0){
       cmd_vel.linear.x = vel->linear.x;
+   }else{
+      if(back_flag == 1){
+	 cmd_vel.linear.x = vel->linear.x * 0.8;
+      }else if(back_flag == 2){
+	 cmd_vel.linear.x = vel->linear.x * 0.5;
+      }else if(back_flag == 3){
+	 cmd_vel.linear.x = 0.0;
+      }else{
+	 cmd_vel.linear.x = vel->linear.x;
+      }
    }
    cmd_vel.linear.y = 0.0;
    pub_vel.publish(cmd_vel);
