@@ -7,14 +7,14 @@
         MOTOR_TC       0.0389 #[Nm/A]
         MOTOR_VC     246.0 #[rpm/V]
      MOTOR_PHASE       0.00000000 #DC
-        RADIUS[0]     -0.11035309 #[m] left
-        RADIUS[1]      0.11000507 #[m] right
+        RADIUS[0]     -0.110356 #[m] left
+        RADIUS[1]      0.110005 #[m] right
            TREAD      -0.5245 #[m]
    CONTROL_CYCLE       0.02000000 #[s]
          MAX_VEL       1.000 #[m/s]
            MAX_W       1.570 #[rad/s]
-       MAX_ACC_V       1.20000000 # past 1.5
-       MAX_ACC_W       0.80000000 # past 1.0
+       MAX_ACC_V       1.50000000 # past 1.5
+       MAX_ACC_W       1.80000000 # past 1.0
   MAX_CENTRI_ACC       9.80000000 #[G]
             L_C1       0.01000000 #
             L_K1     800.00000000 #
@@ -35,4 +35,4 @@
    TORQUE_FINENESS     0.000001
     MOMENT_INERTIA     0.1
    MOTOR_M_INERTIA     0
-    TIRE_M_INERTIA     0.0200
+   TIRE_M_INERTIA      0.0200
