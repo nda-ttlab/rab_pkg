@@ -7,7 +7,7 @@
         MOTOR_TC       0.0389 #[Nm/A]
         MOTOR_VC     246.0 #[rpm/V]
      MOTOR_PHASE       0.00000000 #DC
-        RADIUS[0]     -0.110156 #[m] left
+        RADIUS[0]     -0.111000 #[m] left
         RADIUS[1]      0.110005 #[m] right
            TREAD      -0.5245 #[m]
    CONTROL_CYCLE       0.02000000 #[s]
