@@ -8,12 +8,13 @@
 class DigitalSignage{
  public:
    DigitalSignage(ros::NodeHandle &nh);
-
+   int check_image();   
+   
  private:
    int isInCircle(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg, double x, double y, double radius);
+   int isInAngle(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg, double z, double w);
    void odomCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
    void publish_image(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
-   int check_image();   
 
    int flag;   //画像を表示するためのフラグ
    double pose_x;
@@ -70,6 +71,8 @@ int DigitalSignage::isInCircle(const geometry_msgs::PoseWithCovarianceStamped::C
    double dist;
    dist = sqrt((fabs(msg->pose.pose.position.x)-fabs(x)) * (fabs(msg->pose.pose.position.x)-fabs(x))
 	       + (fabs(msg->pose.pose.position.y)-fabs(y)) * (fabs(msg->pose.pose.position.y)-fabs(y)));
+   ROS_WARN("dist : %lf", dist);
+   ROS_WARN("radius : %lf", radius);
    if(dist < radius){
       return 0;
    }else{
@@ -77,41 +80,40 @@ int DigitalSignage::isInCircle(const geometry_msgs::PoseWithCovarianceStamped::C
    }
 }
 
+int DigitalSignage::isInAngle(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg, double z, double w){
+   // 角度の指定
+}
+
 void DigitalSignage::publish_image(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
    // 条件分岐
-   if(isInCircle(msg, first_x_, first_y_, 1.0) == 1)
+   if(isInCircle(msg, first_x_, first_y_, 1.0) == 0)
      flag = 1;
-   else if(isInCircle(msg, second_x_, second_y_, 1.0) == 1)
+   else if(isInCircle(msg, second_x_, second_y_, 1.0) == 0)
      flag = 2;
-   
    ROS_INFO("flag : %d", flag);
    
-   
-   
-   
-   
-   /*
    // 画像表示
-   if(count > 250 || count <= -1){
-      flag = 0;
+   if(count <= 0 && flag == 0){
       cv::imshow("Image", default_img);
       cv::waitKey(1);
-   }
-   if(flag <= 10 && isInCircle(msg, first_x_, first_y_, 2.0) == 0){
-      flag = 1;	 
+   }else if(count == 0 && flag == 1){	 
       cv::imshow("Image", first_img);
       cv::waitKey(1);	  
-      count = 0;
-   }else if(flag <= 10 && isInCircle(msg, second_x_, second_y_, 2.0) == 0){
-      flag = 1;	 
-      cv::imshow("Image", second_img);
-      cv::waitKey(1);	  
-      count = 0;
+   }else if(count == 0 && flag == 2){
+      // 残り距離描画
+      double dist = sqrt((fabs(msg->pose.pose.position.x)-fabs(second_x_)) * (fabs(msg->pose.pose.position.x)-fabs(second_x_))
+	       + (fabs(msg->pose.pose.position.y)-fabs(second_y_)) * (fabs(msg->pose.pose.position.y)-fabs(second_y_)));
+      char dist_c[256];
+      sprintf(dist_c, "%lf", dist);
+      cv::putText(second_img, dist_c, cv::Point(20,100), cv::FONT_HERSHEY_SIMPLEX, 10, cv::Scalar(0,0,0), 3, CV_AA);
+		  cv::imshow("Image", second_img);
+      cv::waitKey(1);
    }else{
-      flag = 1;
       count+=1;
+      if(count > 250)
+	count = 0;
    }
-   ROS_WARN("count = %d", count); */
+   ROS_WARN("count = %d", count);
 }
 
 void DigitalSignage::odomCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
@@ -129,22 +131,23 @@ void DigitalSignage::odomCallback(const geometry_msgs::PoseWithCovarianceStamped
    publish_image(msg);
 }
 
-/*
 int DigitalSignage::check_image(){
    // 画像が読み込まれなかったら終了
    if(first_img.empty() || second_img.empty() || default_img.empty()){
-      ROS_ERROR("ERROR");
-      return -1;	 
+      ROS_ERROR("Load Image ERROR");
+      return -1;
    }else{
-      ROS_INFO("load success");
+      ROS_INFO("load Image success");
       return 0;
    }  
-}*/   
+}  
 
 int main(int argc, char **argv){
    ros::init(argc, argv, "digital_signage");
    ros::NodeHandle nh;
    DigitalSignage digital_signage(nh);
+   if(digital_signage.check_image() == -1)
+     return -1;
 
    // window作成
    cv::namedWindow("Image", CV_WINDOW_AUTOSIZE | CV_GUI_NORMAL);

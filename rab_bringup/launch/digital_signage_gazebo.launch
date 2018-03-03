@@ -3,12 +3,12 @@
     <param name="odom_topic" value="/amcl_pose" />
   <!-- Set image near main gate -->
     <param name="first_path" value="$(find rab_bringup)/picture/digital_signage/standby_02.jpg" />
-    <param name="first_x" value="228.436" />
-    <param name="first_y" value="174.79" />
+    <param name="first_x" value="0.000" />
+    <param name="first_y" value="5.000" />
   <!-- Set image to guide -->
     <param name="second_path" value="$(find rab_bringup)/picture/digital_signage/guide_survice.jpg" />
-    <param name="second_x" value="220.000" />
-    <param name="second_y" value="220.000" />
+    <param name="second_x" value="0.000" />
+    <param name="second_y" value="-5.000" />
   <!-- Set image to 4th to main gate -->
     <param name="default_path" value="$(find rab_bringup)/picture/digital_signage/hired.jpg" />
   </node>
