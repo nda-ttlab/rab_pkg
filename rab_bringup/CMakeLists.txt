@@ -202,6 +202,9 @@ include_directories(
 add_executable(image_viewer src/image_viewer.cpp)
 target_link_libraries(image_viewer ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
+add_executable(digital_signage src/digital_signage.cpp)
+target_link_libraries(digital_signage ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
 add_executable(param_test src/param_test.cpp)
 target_link_libraries(param_test ${catkin_LIBRARIES})
 
