@@ -1,4 +1,4 @@
-image: src/rab_pkg/rab_navigation/map/remote/4th2main_gate.pgm
+image: 4th2main_gate.pgm
 resolution: 0.050000
 origin: [-100.000000, -100.000000, 0.000000]
 negate: 0
