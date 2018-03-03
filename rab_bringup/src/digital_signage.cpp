@@ -1,6 +1,6 @@
 #include <ros/ros.h>
 #include <ros/package.h>
-#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <visualization_msgs/Marker.h>
 #include <cmath>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -11,16 +11,14 @@ class DigitalSignage{
    int check_image();   
 
  private:
-   int isInCircle(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg, double x, double y, double radius);
-   void odomCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
-   void publish_image(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
-
+   void waypointCallback(const visualization_msgs::Marker::ConstPtr& msg); 
+   
    int flag;   //画像を表示するためのフラグ
    double pose_x;
    double pose_y;
    
    // subscriber
-   ros::Subscriber sub_odom;
+   ros::Subscriber sub_waypoint;
 
    // param for topic
    std::string first_path_;
@@ -44,76 +42,63 @@ DigitalSignage::DigitalSignage(ros::NodeHandle &nh){
    ros::NodeHandle n("~");
    count = -10;
    
-   // 画像読み込み１枚目
+   // 画像読み込み1枚目(正門までの)
    n.param<std::string>("first_path", first_path_, ros::package::getPath("rab_bringup") + "/picture/sample.JPG");
    first_img = cv::imread(first_path_, 1);
    // 表示場所の設定
    n.param("first_x", first_x_, 0.0);
    n.param("first_y", first_y_, 0.0);
    
-   // 2枚目
+   // 2枚目(正門での案内)
    n.param<std::string>("second_path", second_path_, ros::package::getPath("rab_bringup") + "/picture/ubuntu-logo.png");
    second_img = cv::imread(second_path_, 1);
    // 表示場所の設定
    n.param("second_x", second_x_, 0.0);
    n.param("second_y", second_y_, 0.0);
    
-   // デフォルト画像
+   // デフォルト画像(カウントダウン)
    n.param<std::string>("default_path", default_path_, ros::package::getPath("rab_bringup") + "/picture/nabe.jpg");
    default_img = cv::imread(default_path_, 1);
    
    // subscribe topicの設定
-   sub_odom = nh.subscribe<geometry_msgs::PoseWithCovarianceStamped>(n.param<std::string>("odom_topic","odom"), 1, &DigitalSignage::odomCallback, this);
+   sub_waypoint = nh.subscribe<visualization_msgs::Marker>("waypoint_markers", 1, &DigitalSignage::waypointCallback, this);
 }
-
-int DigitalSignage::isInCircle(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg, double x, double y, double radius){
-   double dist;
-   dist = sqrt((fabs(msg->pose.pose.position.x)-fabs(x)) * (fabs(msg->pose.pose.position.x)-fabs(x))
-	       + (fabs(msg->pose.pose.position.y)-fabs(y)) * (fabs(msg->pose.pose.position.y)-fabs(y)));
-   if(dist < radius){
-      return 0;
-   }else{
-      return 1;
-   }
-}
-
+ 
+/*
 void DigitalSignage::publish_image(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
    // 画像表示
-   if(count > 250 || count <= -1){
+    
+    
+   
+   if(isInCircle(msg, 0.0, 0.0, 1.0) == 0 || count == 0){
       flag = 0;
       cv::imshow("Image", default_img);
       cv::waitKey(1);
    }
-   if(flag <= 10 && isInCircle(msg, first_x_, first_y_, 2.0) == 0){
-      flag = 1;	 
+   if(flag <= 10 && isInCircle(msg, first_x_, first_y_, 1.0) == 0){
+      flag = 2;	 
       cv::imshow("Image", first_img);
       cv::waitKey(1);	  
       count = 0;
-   /* }else if(flag <= 10 && isInCircle(msg, second_x_, second_y_, 2.0) == 0){
-      flag = 1;	 
+   }else if(flag <= 10 && isInCircle(msg, second_x_, second_y_, 2.0) == 0){
+      flag = 3;	 
       cv::imshow("Image", second_img);
       cv::waitKey(1);	  
-      count = 0;  */
+      count = 0;
    }else{
       flag = 1;
       count+=1;
+      if(count > 500)
+	count = ;
    }
-   ROS_WARN("count = %d", count);
-}
 
-void DigitalSignage::odomCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
-   /*
-    double orientation_z = 0;
-    double orientation_w = 0;
-    double th0 = 0;
-    th0 = 2 * asin(msg->pose.pose.orientation.z / 2);
-    double th1 = 0;
-    th1 = 2 * acos(msg->pose.pose.orientation.w / 2);
-    ROS_INFO("Seq: [%d]", msg->header.seq);
-    */ 
-   ROS_INFO("Position-> x: [%lf], y: [%lf]", msg->pose.pose.position.x, msg->pose.pose.position.y);
-   //ROS_INFO("Orientation-> th0: [%lf], th1: [%lf]", th0 * 180 / 3.14, th1 * 180 / 3.14);
-   publish_image(msg);
+   ROS_WARN("count = %d", count);
+} */
+
+void DigitalSignage::waypointCallback(const visualization_msgs::Marker::ConstPtr& msg){
+   
+   ROS_INFO("waypoint ID : %d", msg->id);
+   //publish_image(msg);
 }
 
 int DigitalSignage::check_image(){
@@ -128,17 +113,17 @@ int DigitalSignage::check_image(){
 }
 
 int main(int argc, char **argv){
-   ros::init(argc, argv, "image_viewer");
+   ros::init(argc, argv, "digital_signage");
    ros::NodeHandle nh;
    DigitalSignage digital_signage(nh);
-   if(digital_signage.check_image() == -1){
+/*   if(digital_signage.check_image() == -1){
 	return -1;
    }
    
    // window作成
    cv::namedWindow("Image", CV_WINDOW_AUTOSIZE | CV_GUI_NORMAL);
    cv::moveWindow("Image", 0, 0);
-
+*/
    ros::spin();
    return 0;
 }
