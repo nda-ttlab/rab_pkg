@@ -1,0 +1,8 @@
+<launch>
+ <!-- AMCL -->
+ <include file="$(find rab_navigation)/launch/amcl/amcl_4th2gate_withoutrviz.launch" />
+ 
+ <!-- rviz -->
+ <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rab_description)/config/amcl.rviz" required="true" />
+
+</launch>
