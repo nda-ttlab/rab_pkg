@@ -79,7 +79,7 @@ int DigitalSignage::isInCircle(const geometry_msgs::PoseWithCovarianceStamped::C
 
 void DigitalSignage::publish_image(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
    // 条件分岐
-   if(isInCircle(msg, 0.0, 0.0, 2.0) == 1)
+   if(isInCircle(msg, 0.0, 0.0, 1.0) == 1)
      flag = 0;
    else if(isInCircle(msg, first_x_, first_y_, 1.0) == 1)
      flag = 1;
