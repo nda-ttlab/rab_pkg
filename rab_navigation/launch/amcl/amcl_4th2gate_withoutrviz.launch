@@ -6,12 +6,12 @@
   <remap from="/scan" to="/base_scan" />
   
   <!-- Publish scans from best pose at a max of 10 Hz -->
-  <param name="min_particles" value="100"/> <!-- def=100  -->
-  <param name="max_particles" value="300"/> <!-- def=5000 -->
+  <param name="min_particles" value="200"/> <!-- def=100  -->
+  <param name="max_particles" value="500"/> <!-- def=5000 -->
   <param name="kld_err" value="0.01"/>
   <param name="kld_z" value="0.99"/>
-  <param name="update_min_d" value="0.5"/>
-  <param name="update_min_a" value="0.5"/>
+  <param name="update_min_d" value="0.25"/>
+  <param name="update_min_a" value="0.25"/>
   <param name="resample_interval" value="1"/>  <!-- def=2 -->
   <param name="transform_tolerance" value="0.1"/>  
   <param name="recovery_alpha_slow" value="0.001"/>
