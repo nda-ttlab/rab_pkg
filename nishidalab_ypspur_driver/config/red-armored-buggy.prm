@@ -12,9 +12,9 @@
            TREAD      -0.5245 #[m]
    CONTROL_CYCLE       0.02000000 #[s]
          MAX_VEL       1.000 #[m/s]
-           MAX_W       1.570 #[rad/s]
+           MAX_W       1.000 #[rad/s]
        MAX_ACC_V       1.50000000 # past 1.5
-       MAX_ACC_W       1.80000000 # past 1.0
+       MAX_ACC_W       1.00000000 # past 1.0
   MAX_CENTRI_ACC       9.80000000 #[G]
             L_C1       0.01000000 #
             L_K1     800.00000000 #
