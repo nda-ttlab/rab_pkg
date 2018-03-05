@@ -8,12 +8,13 @@
 class DigitalSignage{
  public:
    DigitalSignage(ros::NodeHandle &nh);
-
+   int check_image();   
+   
  private:
    int isInCircle(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg, double x, double y, double radius);
+   int isInAngle(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg, double x, double y, double th);
    void odomCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
    void publish_image(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
-   int check_image();   
 
    int flag;   //画像を表示するためのフラグ
    double pose_x;
@@ -77,6 +78,14 @@ int DigitalSignage::isInCircle(const geometry_msgs::PoseWithCovarianceStamped::C
    }
 }
 
+int DigitalSignage::isInAngle(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg, double z, double w, double th){
+   double euler = 2 * atan2(z, w);
+   if((th - 45.0) < euler && euler < (th + 45.0))
+     return 0;
+   else
+     return 1;
+}
+
 void DigitalSignage::publish_image(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
    // 画像表示
    if(count > 250 || count <= -1){
@@ -102,21 +111,9 @@ void DigitalSignage::publish_image(const geometry_msgs::PoseWithCovarianceStampe
 }
 
 void DigitalSignage::odomCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
-   /*
-    double orientation_z = 0;
-    double orientation_w = 0;
-    double th0 = 0;
-    th0 = 2 * asin(msg->pose.pose.orientation.z / 2);
-    double th1 = 0;
-    th1 = 2 * acos(msg->pose.pose.orientation.w / 2);
-    ROS_INFO("Seq: [%d]", msg->header.seq);
-    */ 
-   ROS_INFO("Position-> x: [%lf], y: [%lf]", msg->pose.pose.position.x, msg->pose.pose.position.y);
-   //ROS_INFO("Orientation-> th0: [%lf], th1: [%lf]", th0 * 180 / 3.14, th1 * 180 / 3.14);
    publish_image(msg);
 }
 
-/*
 int DigitalSignage::check_image(){
    // 画像が読み込まれなかったら終了
    if(first_img.empty() || second_img.empty() || default_img.empty()){
@@ -126,13 +123,14 @@ int DigitalSignage::check_image(){
       ROS_INFO("load success");
       return 0;
    }  
-}*/   
+}   
 
 int main(int argc, char **argv){
    ros::init(argc, argv, "image_viewer");
    ros::NodeHandle nh;
    DigitalSignage digital_signage(nh);
-
+   if(digital_signage.check_image() == -1)
+     return -1;
    // window作成
    cv::namedWindow("Image", CV_WINDOW_AUTOSIZE | CV_GUI_NORMAL);
    cv::moveWindow("Image", 0, 0);
