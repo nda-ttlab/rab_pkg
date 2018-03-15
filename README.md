@@ -36,3 +36,29 @@ $ source devel/setup.bash
 ```
 `source
 devel/setup.bash`はターミナルを立ち上げる(タブでも)度に実行する必要がある。
+
+## 地図の作り方
+### ジョイスティック操作によるコースの走行、ログ取り(コマンドはそれぞれのターミナルで)
+{your_workspace_name}の一番上にいるとしてコマンド実行(続けて書いてあるコマンドは同じターミナルで)
+```bash
+$ cd src/rab_pkg/nishidalab_ypspur_driver/config/
+$ sh nishidlab_ypspur_starter.sh
+
+$ roslaunch nishidalab_ypspur_driver nishidalab_ypspur.launch
+
+$ roslaunch rab_bringup multi_urg_merge.launch
+
+$ roslaunch rab_bringup 3d_sensor.launch
+
+$ roslaunch rab_bringup joy_control.launch
+
+$ roslaunch rab_bringup avoidance_joy.launch
+
+$ cd log/
+$ rosbag record -a
+```bash
+
+
+
+
+
