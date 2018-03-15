@@ -27,6 +27,6 @@
   </node>
 
   <!-- rviz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rab_description)/config/move_base.rviz" required="true" />
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rab_description)/config/move_base.rviz" required="true" /> -->
 </launch>
 
