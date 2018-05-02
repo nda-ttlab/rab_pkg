@@ -70,7 +70,7 @@ $ rosparam set use_simtime true
 
 ### gmappingを起動する
 ```bash
-$ rosrun gmapping lam_gmapping_replay --scan_topic=/base_scan --bag_filename=hogehoge(相対パス).bag
+$ rosrun gmapping slam_gmapping_replay --scan_topic=/base_scan --bag_filename=hogehoge(相対パス).bag
 ```
 
 ### rvizで様子を見てみる
@@ -79,6 +79,7 @@ $ rosrun gmapping lam_gmapping_replay --scan_topic=/base_scan --bag_filename=hog
 
 ### マップが完成したら保存する
 ```bash
+$ cd rab_navigation/map
 $ rosrun map_server map_saver -f filename
 ```
 
