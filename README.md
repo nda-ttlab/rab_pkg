@@ -18,7 +18,8 @@ $ git clone https://github.com/https://github.com/nda-ttlab/rab_pkg.git
 ```bash
 $ cd {your_workspace_name}
 $ wstool init src
-$wstool merge -t src src/rab_pkg/dependencies.rosinstall
+$ wstool merge -t src src/rab_pkg/dependencies.rosinstall
+$ wstool update -t src
 ```
 
 ### 3. `rosdep`コマンドによるパッケージ(apt-getできるもの)のダウンロード
@@ -56,7 +57,7 @@ $ roslaunch rab_bringup avoidance_joy.launch
 
 $ cd log/
 $ rosbag record -a
-```bash
+```
 
 
 
