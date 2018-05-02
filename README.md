@@ -19,6 +19,7 @@ $ git clone https://github.com/https://github.com/nda-ttlab/rab_pkg.git
 $ cd {your_workspace_name}
 $ wstool init src
 $ wstool merge -t src src/rab_pkg/dependencies.rosinstall
+$ wstool update -t src
 ```
 
 ### 3. `rosdep`コマンドによるパッケージ(apt-getできるもの)のダウンロード
