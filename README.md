@@ -59,6 +59,31 @@ $ cd log/
 $ rosbag record -a
 ```
 
+### gmappingを起動する準備をする
+ここから，gmappingの使い方は，
+https://github.com/CIR-KIT/TC2016_for_thirdrobot
+のREADMEの地図作成についての項目を参考にしていただけると助かります．
+```bash
+$ roscore
+$ rosparam set use_simtime true
+```
+
+### gmappingを起動する
+```bash
+$ rosrun gmapping lam_gmapping_replay --scan_topic=/base_scan --bag_filename=hogehoge(相対パス).bag
+```
+
+### rvizで様子を見てみる
+1. Rvizを起動後，ウィンドウ左上の`Fixed Frame`を`map`に設定
+2. 左下のAddボタン->BytopicからMapを選択
+
+### マップが完成したら保存する
+```bash
+$ rosrun map_server map_saver -f filename
+```
+
+以上，とりあえず地図作成までの大まかな手順です．
+
 
 
 
