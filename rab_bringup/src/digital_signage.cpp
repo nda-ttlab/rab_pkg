@@ -139,7 +139,7 @@ void DigitalSignage::publish_image(const geometry_msgs::PoseWithCovarianceStampe
 
 void DigitalSignage::odomCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
    publish_image(msg);
-   int hoge = DigitalSignage::
+   // int hoge = DigitalSignage::
 }
 
 int DigitalSignage::check_image(){
