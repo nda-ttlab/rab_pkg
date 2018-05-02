@@ -56,7 +56,7 @@ $ roslaunch rab_bringup avoidance_joy.launch
 
 $ cd log/
 $ rosbag record -a
-```bash
+```
 
 
 
